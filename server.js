@@ -114,11 +114,15 @@ app.post('/api/ai', async (req, res) => {
 
 // Fallback to index.html for single page routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
-  console.log(`Groq Key in api.env: ${process.env.GROQ_API_KEY ? 'Configured' : 'NOT Configured (Add to api.env)'}`);
-  console.log(`Groq Model: ${process.env.GROQ_MODEL || 'gemma2-9b-it'}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`Groq Key in api.env: ${process.env.GROQ_API_KEY ? 'Configured' : 'NOT Configured (Add to api.env)'}`);
+    console.log(`Groq Model: ${process.env.GROQ_MODEL || 'gemma2-9b-it'}`);
+  });
+}
+
+module.exports = app;
