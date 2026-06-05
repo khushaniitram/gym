@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura AI — Intelligent Fitness Companion</title>
+    <meta name="description" content="AI-Powered Personalized Fitness & Calorie Tracker Web App. Transform your body with customized workouts and smart nutrition mapping.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        
+
+
+        <!-- APP SIDEBAR / NAVIGATION -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon"></div>
+                    <h2>AURA <span>AI</span></h2>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-tab="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-tab="workouts" id="navWorkouts">
+                    <i data-lucide="dumbbell"></i>
+                    <span>Workout</span>
+                </button>
+                <button class="nav-item" data-tab="nutrition" id="navNutrition">
+                    <i data-lucide="apple"></i>
+                    <span>Nutrition Log</span>
+                </button>
+                <button class="nav-item" data-tab="coach" id="navCoach">
+                    <i data-lucide="sparkles"></i>
+                    <span>AI Coach</span>
+                </button>
+                <button class="nav-item" data-tab="settings">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-pill" id="sidebarUserPill">
+                    <div class="avatar" id="userAvatar">A</div>
+                    <div class="user-info">
+                        <h4 id="userProfileName">Khushan</h4>
+                        <p id="userProfileGoal">Goal: Slim & Defined</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT CONTAINER -->
+        <main class="main-content">
+
+            <!-- ONBOARDING PANEL (Shown if no profile is saved) -->
+            <section id="onboardingTab" class="tab-panel hidden">
+                <div class="onboarding-container">
+                    <div class="form-header">
+                        <span class="badge">AURA INTELLIGENCE</span>
+                        <h1>Configure Your Transformation</h1>
+                        <p>Tell Aura your starting point, your ultimate physique target, and what you eat. Our AI will map your exact calorie thresholds, macronutrient balances, and design a weekly training split.</p>
+                    </div>
+
+                    <form id="onboardingForm" class="onboarding-form">
+                        <div class="form-grid">
+                            
+                            <!-- Section 1: Physical Parameters -->
+                            <div class="form-section glass-card">
+                                <h3><i data-lucide="user" class="header-icon"></i> Physical Metrics</h3>
+                                <div class="input-grid">
+                                    <div class="input-group">
+                                        <label for="name">First Name</label>
+                                        <input type="text" id="name" required value="Khushan" readonly>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="gender">Gender</label>
+                                        <select id="gender" required>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other / Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="age">Age (Years)</label>
+                                        <input type="number" id="age" required min="12" max="100" placeholder="e.g., 28">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="weight">Weight (kg)</label>
+                                        <input type="number" id="weight" required min="30" max="250" step="0.1" placeholder="e.g., 82">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="height">Height (cm)</label>
+                                        <input type="number" id="height" required min="100" max="250" placeholder="e.g., 178">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="activityLevel">Activity Level</label>
+                                        <select id="activityLevel" required>
+                                            <option value="Sedentary">Sedentary (Office Job, little exercise)</option>
+                                            <option value="Lightly Active">Lightly Active (1-3 days light exercise/wk)</option>
+                                            <option value="Moderately Active">Moderately Active (3-5 days moderate exercise/wk)</option>
+                                            <option value="Very Active">Very Active (6-7 days heavy training/wk)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Section 2: Prompts and Diet -->
+                            <div class="form-section glass-card">
+                                <h3><i data-lucide="sparkles" class="header-icon"></i> Body Goals & Diet Prompt</h3>
+                                
+                                <div class="input-group">
+                                    <label for="currentBody">What body type are you now?</label>
+                                    <textarea id="currentBody" required rows="3" placeholder="Describe your current physical state. E.g., 'Skinny fat with some belly fat, around 20% body fat, very low muscle mass, feel sluggish and sit at a desk all day.'"></textarea>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="targetBody">What body type do you need / want to achieve?</label>
+                                    <textarea id="targetBody" required rows="3">Visible abs, fit all body muscles, lean and athletic shape. Not bulky or big, just slim, defined, and overall good muscle tone.</textarea>
+                                </div>
+
+                                <div class="input-group">
+                                    <label for="dailyFood">What is your typical daily food intake?</label>
+                                    <textarea id="dailyFood" required rows="3" placeholder="Describe what you normally eat. E.g., 'Skip breakfast, cup of milk tea at 10 AM. Lunch is usually chicken rolls or street food. Dinner is white rice, chicken or eggs, and a can of cola.'"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-large glow" id="generatePlanBtn">
+                                <span>Compile AI Transformation Plan</span>
+                                <i data-lucide="cpu"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- DASHBOARD PANEL -->
+            <section id="dashboardTab" class="tab-panel active">
+                <div class="dashboard-grid">
+                    
+                    <!-- LEFT COLUMN: STATS AND PROGRESS -->
+                    <div class="dashboard-left">
+                        <div class="welcome-header">
+                            <div>
+                                <h1 id="welcomeUser">Welcome back, Athlete!</h1>
+                                <p id="welcomeQuote">Aura is analyzing your parameters. Let's make today count.</p>
+                            </div>
+                            <div class="current-date-badge">
+                                <i data-lucide="calendar"></i>
+                                <span id="currentDateText">June 5, 2026</span>
+                            </div>
+                        </div>
+
+                        <!-- STATS HIGHLIGHT RINGS -->
+                        <div class="glass-card calorie-hero-card">
+                            <div class="calorie-hero-content">
+                                <div class="progress-ring-container">
+                                    <svg class="progress-ring" width="200" height="200">
+                                        <circle class="progress-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="12" fill="transparent" r="85" cx="100" cy="100"/>
+                                        <circle class="progress-ring-bar" id="calorieProgressRing" stroke="url(#cal-gradient)" stroke-dasharray="534" stroke-dashoffset="534" stroke-width="12" stroke-linecap="round" fill="transparent" r="85" cx="100" cy="100"/>
+                                        <defs>
+                                            <linearGradient id="cal-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                <stop offset="0%" stop-color="#ff416c" />
+                                                <stop offset="100%" stop-color="#ff4b2b" />
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                    <div class="progress-ring-text">
+                                        <span class="label">Calories Left</span>
+                                        <span class="number" id="caloriesRemaining">0</span>
+                                        <span class="sublabel" id="caloriesTargetText">Goal: 0 kcal</span>
+                                    </div>
+                                </div>
+
+                                <div class="calorie-summary-details">
+                                    <div class="stat-box">
+                                        <span class="label"><span class="dot eaten"></span>Consumed</span>
+                                        <span class="val" id="caloriesEaten">0 <span class="unit">kcal</span></span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="label"><span class="dot target"></span>Target Limit</span>
+                                        <span class="val" id="caloriesBudget">0 <span class="unit">kcal</span></span>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span class="label"><span class="dot burned"></span>Workout Burn</span>
+                                        <span class="val" id="caloriesBurned">0 <span class="unit">kcal</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Macro bars -->
+                            <div class="macro-bars-grid">
+                                <div class="macro-progress-box">
+                                    <div class="macro-labels">
+                                        <span class="macro-name">Protein</span>
+                                        <span class="macro-amount" id="proteinGramProgress">0g / 0g</span>
+                                    </div>
+                                    <div class="macro-bar-wrapper">
+                                        <div class="macro-bar protein-bg" id="proteinBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="macro-progress-box">
+                                    <div class="macro-labels">
+                                        <span class="macro-name">Carbohydrates</span>
+                                        <span class="macro-amount" id="carbsGramProgress">0g / 0g</span>
+                                    </div>
+                                    <div class="macro-bar-wrapper">
+                                        <div class="macro-bar carbs-bg" id="carbsBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div class="macro-progress-box">
+                                    <div class="macro-labels">
+                                        <span class="macro-name">Fats</span>
+                                        <span class="macro-amount" id="fatsGramProgress">0g / 0g</span>
+                                    </div>
+                                    <div class="macro-bar-wrapper">
+                                        <div class="macro-bar fats-bg" id="fatsBar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RECENT HISTORY CHART -->
+                        <div class="glass-card chart-card">
+                            <div class="card-header">
+                                <h3><i data-lucide="trending-up"></i> Performance Trends</h3>
+                                <div class="chart-controls">
+                                    <button class="btn btn-xs active" id="btnWeightChart">Weight</button>
+                                    <button class="btn btn-xs" id="btnCalorieChart">Calorie Intake</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="historyChart"></canvas>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- RIGHT COLUMN: DYNAMIC UPDATES & AI SUMMARY -->
+                    <div class="dashboard-right-pane">
+                        
+                        <!-- COACH DERECTION / DAILY SUMMARY -->
+                        <div class="glass-card coach-brief-card">
+                            <div class="coach-badge">
+                                <i data-lucide="sparkles"></i>
+                                <span>Aura Coach Assessment</span>
+                            </div>
+                            <div class="coach-avatar-small">
+                                <div class="pulse-ring"></div>
+                                <div class="coach-initial">A</div>
+                            </div>
+                            <div class="coach-words">
+                                <h4 id="coachAssessmentHeader">Assessing Profile...</h4>
+                                <p id="coachAssessmentText">Fill out the onboarding questionnaire to compile your personalized transformation plan!</p>
+                            </div>
+                            <div class="coach-goals-status" id="coachGoalsStatusList">
+                                <!-- Goals will be appended here -->
+                            </div>
+                        </div>
+
+                        <!-- QUICK ACTIONS -->
+                        <div class="glass-card quick-actions-card">
+                            <h3>Quick Actions</h3>
+                            <div class="quick-btn-grid">
+                                <button onclick="app.switchTab('workouts')" class="action-btn">
+                                    <i data-lucide="dumbbell"></i>
+                                    <span>Execute Workout</span>
+                                </button>
+                                <button onclick="app.switchTab('nutrition')" class="action-btn">
+                                    <i data-lucide="plus-circle"></i>
+                                    <span>Log a Meal</span>
+                                </button>
+                                <button onclick="app.switchTab('coach')" class="action-btn">
+                                    <i data-lucide="message-square"></i>
+                                    <span>Chat with Aura</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- DAILY RECOMMENDATIONS (what to eat now) -->
+                        <div class="glass-card recommendations-card">
+                            <h3><i data-lucide="help-circle" class="title-icon"></i> Calorie Advisor</h3>
+                            <div id="caloriesStatusReport">
+                                <p class="report-text">Log your onboarding details and diet profile to get recommendations.</p>
+                            </div>
+                            <div class="food-suggestions" id="foodSuggestionsContainer">
+                                <!-- Suggested items -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- WORKOUTS PANEL -->
+            <section id="workoutsTab" class="tab-panel hidden">
+                <div class="workouts-layout">
+                    
+                    <!-- LEFT COLUMN: ROUTINE SELECTOR AND TIMERS -->
+                    <div class="workouts-sidebar-pane">
+                        <div class="glass-card routine-selector-card">
+                            <h3><i data-lucide="calendar-days"></i> Training Split</h3>
+                            <p class="card-subtitle" id="routineNameText">Register your profile to get a custom schedule</p>
+                            <div class="days-list" id="daysListContainer">
+                                <!-- Days will be dynamically generated here -->
+                            </div>
+                        </div>
+
+                        <!-- SOUND GENERATOR TIMER CARD -->
+                        <div class="glass-card rest-timer-card">
+                            <div class="timer-header">
+                                <h3><i data-lucide="timer"></i> Rest Timer</h3>
+                                <div class="timer-presets">
+                                    <button onclick="timer.setPreset(30)" class="btn btn-xs">30s</button>
+                                    <button onclick="timer.setPreset(60)" class="btn btn-xs">60s</button>
+                                    <button onclick="timer.setPreset(90)" class="btn btn-xs">90s</button>
+                                </div>
+                            </div>
+                            <div class="timer-display">
+                                <svg class="timer-ring" width="160" height="160">
+                                    <circle class="timer-ring-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="70" cx="80" cy="80"/>
+                                    <circle class="timer-ring-bar" id="timerProgressRing" stroke="url(#timer-gradient)" stroke-dasharray="440" stroke-dashoffset="0" stroke-width="8" stroke-linecap="round" fill="transparent" r="70" cx="80" cy="80"/>
+                                    <defs>
+                                        <linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#7f00ff" />
+                                            <stop offset="100%" stop-color="#e100ff" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                <div class="timer-text" id="timerCountdown">01:00</div>
+                            </div>
+                            <div class="timer-controls">
+                                <button id="timerToggleBtn" onclick="timer.toggle()" class="btn btn-primary btn-sm"><i data-lucide="play"></i> Start</button>
+                                <button onclick="timer.reset()" class="btn btn-secondary btn-sm"><i data-lucide="rotate-ccw"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: CURRENT DAY WORKOUT EXERCISES -->
+                    <div class="workout-details-pane">
+                        <div class="glass-card workout-main-card">
+                            <div class="workout-header">
+                                <div>
+                                    <h2 id="currentWorkoutDayFocus">No Workout Selected</h2>
+                                    <p id="currentWorkoutDescription">Please finalize your profile in Onboarding to compile exercises.</p>
+                                </div>
+                                <button id="completeWorkoutBtn" class="btn btn-success hidden" onclick="app.completeWorkout()">
+                                    <i data-lucide="check-circle"></i>
+                                    <span>Finish Workout</span>
+                                </button>
+                            </div>
+
+                            <div class="exercises-container" id="exercisesContainer">
+                                <div class="empty-state">
+                                    <i data-lucide="dumbbell"></i>
+                                    <p>Go to the Onboarding tab and configure your body parameters so Aura can create a personalized training routine.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- NUTRITION LOG PANEL -->
+            <section id="nutritionTab" class="tab-panel hidden">
+                <div class="nutrition-layout">
+                    
+                    <!-- LEFT PANEL: FOOD LOG INPUT -->
+                    <div class="nutrition-input-pane">
+                        <div class="glass-card meal-logger-card">
+                            <div class="card-header-icon">
+                                <div class="icon-wrap"><i data-lucide="apple"></i></div>
+                                <div>
+                                    <h2>Log Daily Food</h2>
+                                    <p>Tell Aura what you ate in natural language. The AI will compute calories and macros.</p>
+                                </div>
+                            </div>
+
+                            <form id="foodLogForm" class="food-log-form">
+                                <div class="input-group">
+                                    <label for="foodPrompt">Describe your meal</label>
+                                    <textarea id="foodPrompt" rows="4" required placeholder="E.g., 'For breakfast, I had a glass of full fat milk, two scrambled eggs with a slice of white bread toasted with a bit of butter'"></textarea>
+                                    <span class="helper-text">List items, amounts, or preparation styles for high precision.</span>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary glow" id="logFoodBtn">
+                                    <span>Log with Aura AI</span>
+                                    <i data-lucide="sparkles"></i>
+                                </button>
+                            </form>
+
+                            <div class="divider">OR ADD MANUALLY</div>
+
+                            <form id="manualFoodForm" class="manual-food-form">
+                                <div class="input-group">
+                                    <label for="manualFoodName">Food Name</label>
+                                    <input type="text" id="manualFoodName" required placeholder="e.g., Protein Shake">
+                                </div>
+                                <div class="input-grid-4">
+                                    <div class="input-group">
+                                        <label for="manualCalories">Kcal</label>
+                                        <input type="number" id="manualCalories" required min="0" placeholder="150">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="manualProtein">Prot (g)</label>
+                                        <input type="number" id="manualProtein" min="0" placeholder="25">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="manualCarbs">Carb (g)</label>
+                                        <input type="number" id="manualCarbs" min="0" placeholder="3">
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="manualFat">Fat (g)</label>
+                                        <input type="number" id="manualFat" min="0" placeholder="1">
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-secondary btn-sm">Add Item Manually</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT PANEL: FOOD LOG & REMAINING CALORIES -->
+                    <div class="nutrition-history-pane">
+                        <div class="glass-card food-history-card">
+                            <div class="card-header">
+                                <h3>Today's Food Log</h3>
+                                <span class="badge" id="todayFoodTotalCal">0 kcal logged</span>
+                            </div>
+
+                            <div class="food-log-list" id="foodLogList">
+                                <!-- Logged items -->
+                                <div class="empty-state">
+                                    <i data-lucide="salad"></i>
+                                    <p>No meals logged today. Describe what you ate on the left or add manually to start tracking.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Macro Balance Card -->
+                        <div class="glass-card macro-balance-card">
+                            <h3>Target Macro Breakdown</h3>
+                            <div class="macro-circles">
+                                <div class="macro-circle-box">
+                                    <div class="circle protein-color" id="proteinPercentageCircle">0%</div>
+                                    <span>Protein</span>
+                                    <small id="proteinMacroTarget">0g Target</small>
+                                </div>
+                                <div class="macro-circle-box">
+                                    <div class="circle carbs-color" id="carbsPercentageCircle">0%</div>
+                                    <span>Carbohydrates</span>
+                                    <small id="carbsMacroTarget">0g Target</small>
+                                </div>
+                                <div class="macro-circle-box">
+                                    <div class="circle fats-color" id="fatsPercentageCircle">0%</div>
+                                    <span>Fats</span>
+                                    <small id="fatsMacroTarget">0g Target</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- AI COACH PANEL -->
+            <section id="coachTab" class="tab-panel hidden">
+                <div class="coach-chat-layout">
+                    <div class="glass-card chat-card-main">
+                        <div class="chat-header">
+                            <div class="coach-profile">
+                                <div class="coach-avatar">A</div>
+                                <div class="coach-meta">
+                                    <h3>AURA AI</h3>
+                                    <p class="status"><span class="pulse-dot"></span> Online Fitness & Nutrition Coach</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-xs" onclick="app.clearChat()">
+                                <i data-lucide="trash-2"></i> Clear Chat
+                            </button>
+                        </div>
+
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message coach">
+                                <div class="message-content">
+                                    <p>Hello! I am Aura, your personalized AI Fitness and Nutrition Guide. Based on your current stats, I can help answer fitness questions, adjust your workouts, suggest substitutions, or clarify dietary choices.</p>
+                                    <p>What's on your mind today? Are we planning a meal, modifying exercises, or focusing on form?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="chat-input-area">
+                            <form id="chatForm" class="chat-form">
+                                <input type="text" id="chatInput" autocomplete="off" placeholder="Ask Aura about training tips, food advice, or plan tweaks...">
+                                <button type="submit" class="btn btn-primary" id="sendChatBtn">
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SETTINGS PANEL -->
+            <section id="settingsTab" class="tab-panel hidden">
+                <div class="settings-container">
+                    <div class="glass-card settings-card">
+                        <h2>Settings & System Controls</h2>
+                        <p class="subtitle">Configure your developer connections, backup profiles, and customize calculation parameters.</p>
+                        
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h3>Groq API Key (GitHub Pages)</h3>
+                                <p>Required only if running on GitHub Pages (static hosting). Kept securely in local storage.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="password" id="groqApiKeyInput" class="input-text" placeholder="gsk_...">
+                                <button onclick="app.saveGroqApiKey()" class="btn btn-secondary">Save Key</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <h3>Weight History</h3>
+                                <p>Record a new weight reading to update your profile and progress charts.</p>
+                            </div>
+                            <div class="setting-control">
+                                <input type="number" id="newWeightInput" class="input-text input-short" step="0.1" placeholder="e.g., 81.5">
+                                <button onclick="app.logNewWeight()" class="btn btn-secondary">Log Weight</button>
+                            </div>
+                        </div>
+
+                        <div class="setting-row warning-row">
+                            <div class="setting-info">
+                                <h3>Reset Profile Data</h3>
+                                <p>Permanently remove your onboarding profiles, meal logs, weights, and start fresh.</p>
+                            </div>
+                            <div class="setting-control">
+                                <button onclick="app.resetAllData()" class="btn btn-danger">Reset Workspace</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- NOTIFICATION POPUP -->
+    <div id="toastNotification" class="toast hidden">
+        <span id="toastMessage">Logged Successfully</span>
+    </div>
+
+    <!-- Core App Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
